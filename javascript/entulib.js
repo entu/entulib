@@ -70,6 +70,7 @@ function EntuLib(entu_user_id, entu_user_key, entu_url) {
             var path = API_VERSION + 'entity-' + entity_id + '?' + data
             __submit_it(callback, path, 'GET')
         },
+        // definition = property's dataproperty name
         findEntity: function (callback, definition, query, limit) {
             var entu_query = {
                 'definition': definition,
@@ -80,6 +81,7 @@ function EntuLib(entu_user_id, entu_user_key, entu_url) {
             var path = API_VERSION + 'entity?' + data
             __submit_it(callback, path, 'GET')
         },
+        // definition = property's dataproperty name
         createEntity: function (callback, parent_id, definition, properties) {
             var entu_query = {}
             entu_query.definition = definition
@@ -90,6 +92,7 @@ function EntuLib(entu_user_id, entu_user_key, entu_url) {
             var path = API_VERSION + 'entity-' + parent_id
             __submit_it(callback, path, 'POST', data)
         },
+        // definition = property's dataproperty name
         addProperties: function (callback, entity_id, definition, properties) {
             var entu_query = {}
             for (var key in properties) {
@@ -99,6 +102,9 @@ function EntuLib(entu_user_id, entu_user_key, entu_url) {
             var path = API_VERSION + 'entity-' + entity_id
             __submit_it(callback, path, 'PUT', data)
         },
+        // property_definition in form of entity_keyname + "-" + property_keyname
+        // as for entity with definition "person" and property with definition "photo"
+        // property_definition = "person-photo"
         addFile: function (callback, entity_id, property_definition, abspath) {
             if (!fs.existsSync(abspath))
                 callback({'Error':'No such file','Path':abspath})
@@ -108,15 +114,14 @@ function EntuLib(entu_user_id, entu_user_key, entu_url) {
                 'property': property_definition
             }
             var data = __create_policy(entu_query)
-            console.log(abspath)
-            console.log(data)
             var path = API_VERSION + 'file?' + data
             file_contents = fs.readFileSync(abspath)
-            console.log(file_contents)
             __submit_it(callback, path, 'POST', file_contents)
         }
     }
 }
+
+// Sample usage
 
 var print_result = function print_result(data) {
     console.log(stringifier(data))
@@ -138,6 +143,11 @@ var stringifier = function stringifier(o) {
 }
 
 var entu_user_id = 1001
-var entu_user_key = 'test the access with help of the key'
+var entu_user_key = 'Write your Entu key here'
 var entu_url = 'yourdomain.entu.ee'
 var EntuLib = new EntuLib(entu_user_id, entu_user_key, entu_url)
+// EntuLib.getEntity(print_result, 684)
+// EntuLib.findEntity(print_result, 'person', 'test', 10)
+// EntuLib.createEntity(print_result, 610, 'person', {'forename':'test3','surname':'test3'})
+// EntuLib.addProperties(print_result, 684, 'person', {'email':'foo@bar','user':'zaza@google'})
+// EntuLib.addFile(print_result, 684, 'person-photo', '/Users/michelek/Dropbox/Screenshots/penrose_bw.png')
