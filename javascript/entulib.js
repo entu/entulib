@@ -4,7 +4,7 @@ var querystring = require('querystring')
 var fs       = require('fs')
 
 
-function EntuLib(entu_user_id, entu_user_key, entu_url) {
+var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
 
     var POLICY_EXPIRATION_MINUTES = 15
     var API_VERSION = '/api2/'
@@ -120,6 +120,9 @@ function EntuLib(entu_user_id, entu_user_key, entu_url) {
         }
     }
 }
+
+module.exports = EntuLib
+
 
 // Sample usage
 
