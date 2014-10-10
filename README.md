@@ -1,7 +1,7 @@
 entulib
 =======
 
-Library for authenticated access to Entu database
+Library for authenticated access to Entu database API
 
 ## 5 methods to please your application
 
