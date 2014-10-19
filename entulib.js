@@ -81,6 +81,12 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
             var path = API_VERSION + 'entity?' + data
             __submit_it(callback, path, 'GET')
         },
+        // Return childs of entity
+        listChilds: function (callback, entity_id) {
+            var data = __create_policy()
+            var path = API_VERSION + 'entity-' + entity_id + '/childs?' + data
+            __submit_it(callback, path, 'GET')
+        },
         // definition = property's dataproperty name
         createEntity: function (callback, parent_id, definition, properties) {
             var entu_query = {}
