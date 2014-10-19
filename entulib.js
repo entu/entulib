@@ -82,9 +82,15 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
             __submit_it(callback, path, 'GET')
         },
         // Return childs of entity
-        listChilds: function (callback, entity_id) {
+        getChilds: function (callback, entity_id) {
             var data = __create_policy()
             var path = API_VERSION + 'entity-' + entity_id + '/childs?' + data
+            __submit_it(callback, path, 'GET')
+        },
+        // Return entity's referrals
+        getReferrals: function (callback, entity_id) {
+            var data = __create_policy()
+            var path = API_VERSION + 'entity-' + entity_id + '/referrals?' + data
             __submit_it(callback, path, 'GET')
         },
         // definition = property's dataproperty name
@@ -156,6 +162,8 @@ var entu_user_key = 'Write your Entu key here'
 var entu_url = 'yourdomain.entu.ee'
 var EntuLib = new EntuLib(entu_user_id, entu_user_key, entu_url)
 // EntuLib.getEntity(print_result, 684)
+// EntuLib.getChilds(print_result, 684)
+// EntuLib.getReferrals(print_result, 684)
 // EntuLib.findEntity(print_result, 'person', 'test', 10)
 // EntuLib.createEntity(print_result, 610, 'person', {'forename':'test3','surname':'test3'})
 // EntuLib.addProperties(print_result, 684, 'person', {'email':'foo@bar','user':'zaza@google'})

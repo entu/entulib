@@ -3,7 +3,7 @@ entulib
 
 Library for authenticated access to Entu database API
 
-## 5 methods to please your application
+## 7 javascript (5 python) methods to please your application
 
 ### python 3
 #### class EntuLib():
@@ -31,6 +31,12 @@ Library for authenticated access to Entu database API
 > - getEntity: function (callback, entity_id)
 >    - on success callback ({result: entity, time: 0.009})
 >    - else callback ({time: 0.009, error: "Entity with given ID is not found!"})
+> - getChilds: function (callback, entity_id)
+>    - on success callback ({count: count, result: {}, time: 0.097})
+>    - else callback ({count: 0, result: {definition: {entities:[entities]}}, time: 0.094})
+> - getReferrals: function (callback, entity_id)
+>    - on success callback ({result: entity, time: 0.009})
+>    - else callback ({count: 0, result: {definition: {entities:[entities]}}, time: 0.095})
 > - findEntity: function (callback, definition, query, limit)
 >    - on success callback ({ count: count, result: [entitylist], time: 0.011})
 >    - else callback ({ count: 0, result: [], time: 0.086 })
