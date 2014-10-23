@@ -1,5 +1,7 @@
 entulib
 =======
+[![DOI](https://zenodo.org/badge/6763/mitselek/entulib.png)](http://dx.doi.org/10.5281/zenodo.12356)
+
 
 Library for authenticated access to Entu database API
 
