@@ -41,6 +41,7 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
             method: method
         }
         if (data !== undefined) {
+            data = data.toString()
             options.headers = {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Content-Length': data.length
@@ -59,6 +60,7 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
             })
         })
         if (data !== undefined) {
+            // console.log(typeof data + ' . ' + util.inspect(data))
             request.write(data)
         }
         request.end()
@@ -68,7 +70,7 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
         getEntity: function (entity_id, callback) {
             var data = __create_policy()
             var path = API_VERSION + 'entity-' + entity_id + '?' + data
-            __submit_it(path, 'GET', callback)
+            __submit_it(path, 'GET', undefined, callback)
         },
         // definition = property's dataproperty name
         findEntity: function (definition, query, limit, callback) {
@@ -79,19 +81,19 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
             }
             var data = __create_policy(entu_query)
             var path = API_VERSION + 'entity?' + data
-            __submit_it(path, 'GET', callback)
+            __submit_it(path, 'GET', undefined, callback)
         },
         // Return childs of entity
         getChilds: function (entity_id, callback) {
             var data = __create_policy()
             var path = API_VERSION + 'entity-' + entity_id + '/childs?' + data
-            __submit_it(path, 'GET', callback)
+            __submit_it(path, 'GET', undefined, callback)
         },
         // Return entity's referrals
         getReferrals: function (entity_id, callback) {
             var data = __create_policy()
             var path = API_VERSION + 'entity-' + entity_id + '/referrals?' + data
-            __submit_it(path, 'GET', callback)
+            __submit_it(path, 'GET', undefined, callback)
         },
         // definition = property's dataproperty name
         createEntity: function (parent_id, definition, properties, callback) {
