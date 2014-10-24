@@ -3,7 +3,27 @@ entulib
 [![DOI](https://zenodo.org/badge/6763/mitselek/entulib.png)](http://dx.doi.org/10.5281/zenodo.12356)
 
 
-Library for authenticated access to Entu database API
+Library for authenticated access to Entu database API.
+
+
+| Service Request | Description | HTTP Method | Py3 | NodeJS
+|:---- |:---- |:---- |:---:|:---:|
+| Get Entity | Fetch Entity by ID | GET | + | + |
+| Get Childs | Description | GET | - | + |
+| Get Referrals | Description | GET | - | + |
+| Find Entity | Description | GET | + | + |
+| Create Entity | Description | POST | + | + |
+| Add Properties | Description | PUT | + | + |
+| Add File | Description | POST | + | + |
+
+
+Authentication of application is done with
+    
+  - API key
+    - that is stored in Entu
+      - and is attached to entity
+        - that identifies the application
+    
 
 ## 7 javascript (5 python) methods to please your application
 
