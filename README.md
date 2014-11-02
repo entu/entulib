@@ -5,9 +5,14 @@ entulib
 
 Library for authenticated access to Entu database API.
 
-Note.
-If using entulib as git submodule, then update it with line
-> git submodule foreach git pull origin master
+Note.  
+If using entulib as git submodule, then update it with lines
+> git pull  
+> git submodule init  
+> git submodule update  
+> git submodule status  
+> git submodule foreach git pull origin master  
+> git submodule status  
 
 | Service Request | Description | HTTP Method | Py3 | NodeJS
 |:---- |:---- |:---- |:---:|:---:|
