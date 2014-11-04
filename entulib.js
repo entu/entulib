@@ -59,6 +59,10 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
                 callback(null, returned_data)
             })
         })
+        request.on('error', function (e) {
+            callback(e)
+            return
+        })
         if (data !== undefined) {
             // console.log(typeof data + ' . ' + util.inspect(data))
             request.write(data)
