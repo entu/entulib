@@ -30,7 +30,7 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
         entu_query.policy = encoded_policy
         entu_query.user = entu_user_id
         entu_query.signature = signature
-        return querystring.stringify(entu_query)
+        return entu_query
     }
 
     var __submit_it = function __submit_it(path, method, data, callback) {
@@ -41,11 +41,16 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
             method: method
         }
         if (data !== undefined) {
+            content_type = 'application/x-www-form-urlencoded'
+            if (data.file !== undefined) {
+                content_type = 'multipart/formdata'
+            }
             data = data.toString()
             options.headers = {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': content_type,
                 'Content-Length': data.length
             }
+            console.log(options)
         }
         var buffer = ''
         var request = https.request(options)
@@ -79,7 +84,7 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
 
     return {
         getEntity: function (entity_id, callback) {
-            var data = __create_policy()
+            var data = querystring.stringify(__create_policy())
             var path = API_VERSION + 'entity-' + entity_id + '?' + data
             __submit_it(path, 'GET', undefined, callback)
         },
@@ -96,13 +101,13 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
         },
         // Return childs of entity
         getChilds: function (entity_id, callback) {
-            var data = __create_policy()
+            var data = querystring.stringify(__create_policy())
             var path = API_VERSION + 'entity-' + entity_id + '/childs?' + data
             __submit_it(path, 'GET', undefined, callback)
         },
         // Return entity's referrals
         getReferrals: function (entity_id, callback) {
-            var data = __create_policy()
+            var data = querystring.stringify(__create_policy())
             var path = API_VERSION + 'entity-' + entity_id + '/referrals?' + data
             __submit_it(path, 'GET', undefined, callback)
         },
@@ -113,7 +118,7 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
             for (var key in properties) {
                 entu_query[definition + '-' + key] = properties[key]
             }
-            var data = __create_policy(entu_query)
+            var data = querystring.stringify(__create_policy(entu_query))
             var path = API_VERSION + 'entity-' + parent_id
             __submit_it(path, 'POST', data, callback)
         },
@@ -123,15 +128,14 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
             for (var key in properties) {
                 entu_query[definition + '-' + key] = properties[key]
             }
-            var data = __create_policy(entu_query)
+            var data = querystring.stringify(__create_policy(entu_query))
             var path = API_VERSION + 'entity-' + entity_id
             __submit_it(path, 'PUT', data, callback)
         },
-        // definition = property's dataproperty name
         removeProperty: function (entity_id, property_definition, property_id, callback) {
             var entu_query = {}
             entu_query[property_definition + '.' + property_id] = ''
-            var data = __create_policy(entu_query)
+            var data = querystring.stringify(__create_policy(entu_query))
             var path = API_VERSION + 'entity-' + entity_id
             __submit_it(path, 'PUT', data, callback)
         },
@@ -141,15 +145,18 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
         addFile: function (entity_id, property_definition, abspath, callback) {
             if (!fs.existsSync(abspath))
                 callback({'Error':'No such file','Path':abspath})
+            console.log(abspath)
             var entu_query = {
                 'filename': abspath,
                 'entity': entity_id,
                 'property': property_definition
             }
             var data = __create_policy(entu_query)
-            var path = API_VERSION + 'file?' + data
-            file_contents = fs.readFileSync(abspath)
-            __submit_it(path, 'POST', file_contents, callback)
+            var path = API_VERSION + 'file'
+            data.file = fs.readFileSync(abspath)
+            data = querystring.stringify(data)
+            console.log(data)
+            __submit_it(path, 'POST', data, callback)
         }
     }
 }
