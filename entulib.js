@@ -55,7 +55,14 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
             })
             response.on('end', function response_emitter() {
                 var str = buffer.toString()
-                var returned_data = JSON.parse(str)
+                try {
+                    var returned_data = JSON.parse(str)
+                }
+                catch (err) {
+                    console.log('EntuLib err: ', err)
+                    callback(err, str)
+                    return
+                }
                 callback(null, returned_data)
             })
         })
