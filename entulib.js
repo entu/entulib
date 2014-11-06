@@ -127,6 +127,14 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
             var path = API_VERSION + 'entity-' + entity_id
             __submit_it(path, 'PUT', data, callback)
         },
+        // definition = property's dataproperty name
+        removeProperty: function (entity_id, property_definition, property_id, callback) {
+            var entu_query = {}
+            entu_query[property_definition + '.' + property_id] = ''
+            var data = __create_policy(entu_query)
+            var path = API_VERSION + 'entity-' + entity_id
+            __submit_it(path, 'PUT', data, callback)
+        },
         // property_definition in form of entity_keyname + "-" + property_keyname
         // as for entity with definition "person" and property with definition "photo"
         // property_definition = "person-photo"
