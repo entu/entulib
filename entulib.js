@@ -50,7 +50,7 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
                 'Content-Type': content_type,
                 'Content-Length': data.length
             }
-            console.log(options)
+            // console.log(options)
         }
         var buffer = ''
         var request = https.request(options)
@@ -145,7 +145,7 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
         addFile: function (entity_id, property_definition, abspath, callback) {
             if (!fs.existsSync(abspath))
                 callback({'Error':'No such file','Path':abspath})
-            console.log(abspath)
+            // console.log(abspath)
             var entu_query = {
                 'filename': abspath,
                 'entity': entity_id,
@@ -155,7 +155,7 @@ var EntuLib = function EntuLib(entu_user_id, entu_user_key, entu_url) {
             var path = API_VERSION + 'file'
             data.file = fs.readFileSync(abspath)
             data = querystring.stringify(data)
-            console.log(data)
+            // console.log(data)
             __submit_it(path, 'POST', data, callback)
         }
     }
