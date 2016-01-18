@@ -20,6 +20,7 @@
   "dependencies": {
     "async": "1.x",
     "object-path": "0.x",
-    "promise": "^7.1.1"
+    "promise": "^7.1.1",
+    "request": "^2.67.0"
   }
 }
