@@ -44,7 +44,6 @@ function getEntity(id, entuOptions) {
         }
 
         var apiUrl = entuOptions.entuUrl + '/api2/entity-' + id
-        console.log(apiUrl)
         request.get({url: apiUrl, headers: headers, qs: qs, strictSSL: true, json: true}, function(err, response, body) {
             if (err) {
                 return reject(err)
@@ -114,13 +113,14 @@ function getEntity(id, entuOptions) {
 
 
 //Get entities by definition
-function getEntities(definition, limit, entuOptions) {
+function getEntities(definition, limit, page, entuOptions) {
     return new Promise(function (fulfill, reject) {
         if (!definition) { return reject(new Error('Missing "definition"')) }
 
         var qs = {definition: definition}
         var headers = {}
         if (limit) { qs.limit = limit }
+        if (page) { qs.page = page }
         if (authId && authToken) {
             headers = {'X-Auth-UserId': authId, 'X-Auth-Token': authToken}
         } else {
