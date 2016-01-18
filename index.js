@@ -140,7 +140,7 @@ function getEntities(definition, limit, page, entuOptions) {
                 })
             }, function(error) {
                 if (error) { return reject(error) }
-                fulfill(entities)
+                fulfill({ entities: entities, total: body.count, count: entities.length, page: page })
             })
         })
     })
