@@ -43,7 +43,9 @@ function getEntity(id, entuOptions) {
             qs = signData(null, entuOptions)
         }
 
-        request.get({url: entuOptions.entuUrl + '/entity-' + id, headers: headers, qs: qs, strictSSL: true, json: true}, function(err, response, body) {
+        var apiUrl = entuOptions.entuUrl + '/api2/entity-' + id
+        console.log(apiUrl)
+        request.get({url: apiUrl, headers: headers, qs: qs, strictSSL: true, json: true}, function(err, response, body) {
             if (err) {
                 return reject(err)
             }
@@ -62,7 +64,7 @@ function getEntity(id, entuOptions) {
                 displayname: op.get(body, 'result.displayname', null),
                 displayinfo: op.get(body, 'result.displayinfo', null),
                 definition: op.get(body, 'result.definition.keyname', null),
-                picture: entuOptions.entuUrl + '/entity-' + op.get(body, 'result.id', null) + '/picture',
+                picture: entuOptions.entuUrl + '/api2/entity-' + op.get(body, 'result.id', null) + '/picture',
                 right: op.get(body, 'result.right', null),
                 properties: {}
             }
@@ -75,7 +77,7 @@ function getEntity(id, entuOptions) {
                                 created: op.get(properties, [p, 'values', v, 'created']),
                                 'created_by': op.get(properties, [p, 'values', v, 'created_by']),
                                 value: op.get(properties, [p, 'values', v, 'value']),
-                                file: entuOptions.entuUrl + '/file-' + op.get(properties, [p, 'values', v, 'db_value'])
+                                file: entuOptions.entuUrl + '/api2/file-' + op.get(properties, [p, 'values', v, 'db_value'])
                             })
                         } else if (op.get(properties, [p, 'datatype']) === 'text') {
                             op.push(entity, ['properties', p], {
@@ -125,7 +127,7 @@ function getEntities(definition, limit, entuOptions) {
             qs = signData(qs)
         }
 
-        request.get({url: entuOptions.entuUrl + '/entity', headers: headers, qs: qs, strictSSL: true, json: true}, function(error, response, body) {
+        request.get({url: entuOptions.entuUrl + '/api2/entity', headers: headers, qs: qs, strictSSL: true, json: true}, function(error, response, body) {
             if (error) { return reject(error) }
             if (response.statusCode !== 200 || !body.result) { return reject(new Error(op.get(body, 'error', body))) }
 
@@ -216,7 +218,7 @@ function edit(params, entuOptions) {
     var qb = signData(body)
     return new Promise(function (fulfill, reject) {
         request.put(
-            { url: entuOptions.entuUrl + '/entity-' + params.entity_id, headers: headers, body: qb, strictSSL: true, json: true, timeout: 60000 },
+            { url: entuOptions.entuUrl + '/api2/entity-' + params.entity_id, headers: headers, body: qb, strictSSL: true, json: true, timeout: 60000 },
             function(error, response, body) {
                 if(error) { return reject(error) }
                 if(response.statusCode !== 201 || !body.result) { return reject(new Error(op.get(body, 'error', body))) }
@@ -245,7 +247,7 @@ function add(parentEid, definition, properties, entuOptions) {
     }
 
     var options = {
-        url: entuOptions.entuUrl + '/entity-' + parentEid,
+        url: entuOptions.entuUrl + '/api2/entity-' + parentEid,
         headers: headers,
         body: qb,
         strictSSL: true,
