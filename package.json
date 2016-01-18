@@ -1,0 +1,25 @@
+{
+  "private": false,
+  "name": "entulib",
+  "version": "0.0.1",
+  "license": "MIT",
+  "description": "Javascript library to access Entu database",
+  "homepage": "https://github.com/mitselek/entulib",
+  "author": "Mihkel Putrinš <mihkel@entu.ee>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mitselek/entulib"
+  },
+  "bugs": {
+    "email": "mihkel@entu.ee",
+    "url": "https://github.com/mitselek/entulib/issues"
+  },
+  "engines": {
+    "node": "4.x"
+  },
+  "dependencies": {
+    "async": "1.x",
+    "object-path": "0.x",
+    "promise": "^7.1.1"
+  }
+}
