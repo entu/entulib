@@ -121,8 +121,8 @@ function getEntities(definition, limit, page, entuOptions) {
         var headers = {}
         if (limit) { qs.limit = limit }
         if (page) { qs.page = page }
-        if (authId && authToken) {
-            headers = {'X-Auth-UserId': authId, 'X-Auth-Token': authToken}
+        if (entuOptions.authId && entuOptions.authToken) {
+            headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
         } else {
             qs = signData(qs)
         }
@@ -154,8 +154,8 @@ function getChilds(parentEid, definition, entuOptions) {
         var qs = {}
         if (definition) { qs = {definition: definition} }
         var headers = {}
-        if (authId && authToken) {
-            headers = {'X-Auth-UserId': authId, 'X-Auth-Token': authToken}
+        if (entuOptions.authId && entuOptions.authToken) {
+            headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
         } else {
             qs = signData(qs)
         }
@@ -215,6 +215,9 @@ function edit(params, entuOptions) {
     }
     body[property] = op.get(params, 'new_value', '')
     var headers = {}
+    if (entuOptions.authId && entuOptions.authToken) {
+        headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
+    }
     var qb = signData(body)
     return new Promise(function (fulfill, reject) {
         request.put(
@@ -240,8 +243,8 @@ function add(parentEid, definition, properties, entuOptions) {
 
     var headers = {}
     var qb = data
-    if (authId && authToken) {
-        headers = {'X-Auth-UserId': authId, 'X-Auth-Token': authToken}
+    if (entuOptions.authId && entuOptions.authToken) {
+        headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
     } else {
         qb = signData(data)
     }
