@@ -124,7 +124,7 @@ function getEntities(definition, limit, page, entuOptions) {
         if (entuOptions.authId && entuOptions.authToken) {
             headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
         } else {
-            qs = signData(qs)
+            qs = signData(qs, entuOptions)
         }
 
         request.get({url: entuOptions.entuUrl + '/api2/entity', headers: headers, qs: qs, strictSSL: true, json: true}, function(error, response, body) {
@@ -157,7 +157,7 @@ function getChilds(parentEid, definition, entuOptions) {
         if (entuOptions.authId && entuOptions.authToken) {
             headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
         } else {
-            qs = signData(qs)
+            qs = signData(qs, entuOptions)
         }
         var url = '/entity-' + parentEid + '/childs'
         var options = {
@@ -218,7 +218,7 @@ function edit(params, entuOptions) {
     if (entuOptions.authId && entuOptions.authToken) {
         headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
     }
-    var qb = signData(body)
+    var qb = signData(body, entuOptions)
     return new Promise(function (fulfill, reject) {
         request.put(
             { url: entuOptions.entuUrl + '/api2/entity-' + params.entity_id, headers: headers, body: qb, strictSSL: true, json: true, timeout: 60000 },
@@ -246,7 +246,7 @@ function add(parentEid, definition, properties, entuOptions) {
     if (entuOptions.authId && entuOptions.authToken) {
         headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
     } else {
-        qb = signData(data)
+        qb = signData(data, entuOptions)
     }
 
     var options = {
