@@ -6,12 +6,12 @@ var crypto    = require('crypto')
 var Promise   = require('promise')
 // var Promise  = require('promise/lib/rejection-tracking').enable( {allRejections: true} )
 
-LIMIT_PARALLEL = 3
+// Object.keys(entuOptions) = [ entuUrl, user, key, authId, authToken ]
 
-function signData(data) {
+function signData(data, entuOptions) {
     data = data || {}
 
-    if (!APP_ENTU_USER || !APP_ENTU_KEY) { return data }
+    if (!entuOptions.user || !entuOptions.key) { return data }
 
     var conditions = []
     for (k in data) {
@@ -23,27 +23,27 @@ function signData(data) {
     var expiration = new Date()
     expiration.setMinutes(expiration.getMinutes() + 10)
 
-    data.user = APP_ENTU_USER
+    data.user = entuOptions.user
     var buffStr = JSON.stringify({expiration: expiration.toISOString(), conditions: conditions})
     data.policy = new Buffer(buffStr).toString('base64')
-    data.signature = crypto.createHmac('sha1', APP_ENTU_KEY).update(data.policy).digest('base64')
+    data.signature = crypto.createHmac('sha1', entuOptions.key).update(data.policy).digest('base64')
 
     return data
 }
 
 
 //Get entity from Entu
-function getEntity(id, authId, authToken) {
+function getEntity(id, entuOptions) {
     return new Promise(function (fulfill, reject) {
         var headers = {}
         var qs = {}
-        if (authId && authToken) {
-            headers = {'X-Auth-UserId': authId, 'X-Auth-Token': authToken}
+        if (entuOptions.authId && entuOptions.authToken) {
+            headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
         } else {
-            qs = signData()
+            qs = signData(null, entuOptions)
         }
 
-        request.get({url: APP_ENTU_URL + '/entity-' + id, headers: headers, qs: qs, strictSSL: true, json: true}, function(err, response, body) {
+        request.get({url: entuOptions.entuUrl + '/entity-' + id, headers: headers, qs: qs, strictSSL: true, json: true}, function(err, response, body) {
             if (err) {
                 return reject(err)
             }
@@ -62,7 +62,7 @@ function getEntity(id, authId, authToken) {
                 displayname: op.get(body, 'result.displayname', null),
                 displayinfo: op.get(body, 'result.displayinfo', null),
                 definition: op.get(body, 'result.definition.keyname', null),
-                picture: APP_ENTU_URL + '/entity-' + op.get(body, 'result.id', null) + '/picture',
+                picture: entuOptions.entuUrl + '/entity-' + op.get(body, 'result.id', null) + '/picture',
                 right: op.get(body, 'result.right', null),
                 properties: {}
             }
@@ -75,7 +75,7 @@ function getEntity(id, authId, authToken) {
                                 created: op.get(properties, [p, 'values', v, 'created']),
                                 'created_by': op.get(properties, [p, 'values', v, 'created_by']),
                                 value: op.get(properties, [p, 'values', v, 'value']),
-                                file: APP_ENTU_URL + '/file-' + op.get(properties, [p, 'values', v, 'db_value'])
+                                file: entuOptions.entuUrl + '/file-' + op.get(properties, [p, 'values', v, 'db_value'])
                             })
                         } else if (op.get(properties, [p, 'datatype']) === 'text') {
                             op.push(entity, ['properties', p], {
@@ -112,7 +112,7 @@ function getEntity(id, authId, authToken) {
 
 
 //Get entities by definition
-function getEntities(definition, limit, authId, authToken) {
+function getEntities(definition, limit, entuOptions) {
     return new Promise(function (fulfill, reject) {
         if (!definition) { return reject(new Error('Missing "definition"')) }
 
@@ -125,13 +125,13 @@ function getEntities(definition, limit, authId, authToken) {
             qs = signData(qs)
         }
 
-        request.get({url: APP_ENTU_URL + '/entity', headers: headers, qs: qs, strictSSL: true, json: true}, function(error, response, body) {
+        request.get({url: entuOptions.entuUrl + '/entity', headers: headers, qs: qs, strictSSL: true, json: true}, function(error, response, body) {
             if (error) { return reject(error) }
             if (response.statusCode !== 200 || !body.result) { return reject(new Error(op.get(body, 'error', body))) }
 
             var entities = []
             async.eachSeries(op.get(body, 'result', []), function(e, callback) {
-                getEntity(e.id, authId, authToken)
+                getEntity(e.id, entuOptions)
                 .then(function(opEntity) {
                     entities.push(opEntity)
                     callback()
@@ -146,7 +146,7 @@ function getEntities(definition, limit, authId, authToken) {
 
 
 //Get childs by parent entity id and optionally by definition
-function getChilds(parentEid, definition, authId, authToken) {
+function getChilds(parentEid, definition, entuOptions) {
     return new Promise(function (fulfill, reject) {
         if (!parentEid) { return reject(new Error('Missing "parentEid"')) }
         var qs = {}
@@ -159,7 +159,7 @@ function getChilds(parentEid, definition, authId, authToken) {
         }
         var url = '/entity-' + parentEid + '/childs'
         var options = {
-            url: APP_ENTU_URL + url,
+            url: entuOptions.entuUrl + url,
             headers: headers,
             qs: qs,
             strictSSL: true,
@@ -175,7 +175,7 @@ function getChilds(parentEid, definition, authId, authToken) {
                 function doLoop(definition, doLoopCB) {
                     var loop = ['result', definition, 'entities']
                     async.each(op.get(body, loop, []), function(e, eachCB) {
-                        getEntity(e.id, authId, authToken)
+                        getEntity(e.id, entuOptions)
                         .then(function(childE) {
                             childE.set('_display', {name: e.name, info: e.info})
                             childs.push(childE)
@@ -205,7 +205,7 @@ function getChilds(parentEid, definition, authId, authToken) {
 //     property_id: property_id,
 //     new_value: new_value
 // }
-function edit(params) {
+function edit(params, entuOptions) {
     var body = {}
     var property = params.entity_definition + '-' + params.dataproperty
     if (op.get(params, ['property_id'], false)) {
@@ -216,7 +216,7 @@ function edit(params) {
     var qb = signData(body)
     return new Promise(function (fulfill, reject) {
         request.put(
-            { url: APP_ENTU_URL + '/entity-' + params.entity_id, headers: headers, body: qb, strictSSL: true, json: true, timeout: 60000 },
+            { url: entuOptions.entuUrl + '/entity-' + params.entity_id, headers: headers, body: qb, strictSSL: true, json: true, timeout: 60000 },
             function(error, response, body) {
                 if(error) { return reject(error) }
                 if(response.statusCode !== 201 || !body.result) { return reject(new Error(op.get(body, 'error', body))) }
@@ -227,7 +227,7 @@ function edit(params) {
 }
 
 //Add entity
-function add(parentEid, definition, properties, authId, authToken) {
+function add(parentEid, definition, properties, entuOptions) {
     var data = { definition: definition }
 
     for (p in properties) {
@@ -245,7 +245,7 @@ function add(parentEid, definition, properties, authId, authToken) {
     }
 
     var options = {
-        url: APP_ENTU_URL + '/entity-' + parentEid,
+        url: entuOptions.entuUrl + '/entity-' + parentEid,
         headers: headers,
         body: qb,
         strictSSL: true,
