@@ -265,11 +265,41 @@ function add(parentEid, definition, properties, entuOptions) {
     })
 }
 
+// Poll Entu for updated entities
+// options: {
+//     definition: definition,
+//     timestamp: unix_timestamp,
+//     limit: limit
+// }
+// As of API2@2016-02-05, limit < 500, default 50
+function pollUpdates(options, authId, authToken) {
+    // debug('Polling from ' + APP_ENTU_URL + '/changed' + ' with ', JSON.stringify(options, null, 4))
+    var qs = {}
+    op.set(qs, ['limit'], op.get(options, ['limit'], 50))
+    if (options.definition) { qs.definition = options.definition }
+    if (options.timestamp) { qs.timestamp = options.timestamp }
+
+    var headers = {}
+    if (authId && authToken) {
+        headers = {'X-Auth-UserId': authId, 'X-Auth-Token': authToken}
+    } else {
+        qs = signData(qs)
+    }
+
+    return new Promise(function (fulfill, reject) {
+        request.get({url: APP_ENTU_URL + '/changed', headers: headers, qs: qs, strictSSL: true, json: true}, function(error, response, body) {
+            if (error) { return reject(error) }
+            if (response.statusCode !== 200 || !body.result) { return reject(new Error(op.get(body, 'error', body))) }
+            fulfill(op.get(body, 'result', []))
+        })
+    })
+}
 
 module.exports = {
     getEntity: getEntity,
     getChilds: getChilds,
     getEntities: getEntities,
+    pollUpdates: pollUpdates,
     edit: edit,
     add: add
 }
