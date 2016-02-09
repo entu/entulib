@@ -272,23 +272,33 @@ function add(parentEid, definition, properties, entuOptions) {
 //     limit: limit
 // }
 // As of API2@2016-02-05, limit < 500, default 50
-function pollUpdates(options, authId, authToken) {
-    // debug('Polling from ' + APP_ENTU_URL + '/changed' + ' with ', JSON.stringify(options, null, 4))
+function pollUpdates(entuOptions) {
+    console.log('Polling changed' + ' with ', JSON.stringify(entuOptions, null, 4))
     var qs = {}
-    op.set(qs, ['limit'], op.get(options, ['limit'], 50))
-    if (options.definition) { qs.definition = options.definition }
-    if (options.timestamp) { qs.timestamp = options.timestamp }
+    op.set(qs, ['limit'], op.get(entuOptions, ['limit'], 50))
+    if (entuOptions.definition) { qs.definition = entuOptions.definition }
+    if (entuOptions.timestamp) { qs.timestamp = entuOptions.timestamp }
 
     var headers = {}
-    if (authId && authToken) {
-        headers = {'X-Auth-UserId': authId, 'X-Auth-Token': authToken}
+    if (entuOptions.authId && entuOptions.authToken) {
+        headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
     } else {
-        qs = signData(qs)
+        qs = signData(qs, entuOptions)
     }
 
+    var options = {
+        url: entuOptions.entuUrl + '/api2/changed',
+        headers: headers,
+        qs: qs,
+        strictSSL: true,
+        json: true
+    }
     return new Promise(function (fulfill, reject) {
-        request.get({url: APP_ENTU_URL + '/changed', headers: headers, qs: qs, strictSSL: true, json: true}, function(error, response, body) {
-            if (error) { return reject(error) }
+        request.get(options, function(error, response, body) {
+            if (error) {
+                console.log(error)
+                return reject(error)
+            }
             if (response.statusCode !== 200 || !body.result) { return reject(new Error(op.get(body, 'error', body))) }
             fulfill(op.get(body, 'result', []))
         })
