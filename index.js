@@ -273,7 +273,6 @@ function add(parentEid, definition, properties, entuOptions) {
 // }
 // As of API2@2016-02-05, limit < 500, default 50
 function pollUpdates(entuOptions) {
-    console.log('Polling changed' + ' with ', JSON.stringify(entuOptions, null, 4))
     var qs = {}
     op.set(qs, ['limit'], op.get(entuOptions, ['limit'], 50))
     if (entuOptions.definition) { qs.definition = entuOptions.definition }
@@ -296,7 +295,6 @@ function pollUpdates(entuOptions) {
     return new Promise(function (fulfill, reject) {
         request.get(options, function(error, response, body) {
             if (error) {
-                console.log(error)
                 return reject(error)
             }
             if (response.statusCode !== 200 || !body.result) { return reject(new Error(op.get(body, 'error', body))) }
