@@ -103,7 +103,7 @@ function getEntity(id, entuOptions) {
                             })
                         }
                     }
-                    if (op.get(properties, [p, 'multiplicity']) === 1) { op.set(entity, ['properties', p], op.get(entity, ['properties', p, 0])) }
+                    // if (op.get(properties, [p, 'multiplicity']) === 1) { op.set(entity, ['properties', p], op.get(entity, ['properties', p, 0])) }
                 }
             }
             fulfill(op(entity))
