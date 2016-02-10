@@ -298,7 +298,7 @@ function pollUpdates(entuOptions) {
                 return reject(error)
             }
             if (response.statusCode !== 200 || !body.result) { return reject(new Error(op.get(body, 'error', body))) }
-            fulfill(op.get(body, 'result', []))
+            fulfill({ 'updates': op.get(body, 'result', []), 'count': op.get(body, 'count', 0) })
         })
     })
 }
