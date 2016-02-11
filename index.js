@@ -303,11 +303,29 @@ function pollUpdates(entuOptions) {
     })
 }
 
+function requestFile(fileUrl, entuOptions) {
+    var headers = {}
+    var qs = {}
+    if (entuOptions.authId && entuOptions.authToken) {
+        headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
+    } else {
+        qs = signData(null, entuOptions)
+    }
+    var options = {
+        url: fileUrl,
+        headers: headers,
+        qs: qs,
+    }
+    return request.get(options)
+}
+
+
 module.exports = {
     getEntity: getEntity,
     getChilds: getChilds,
     getEntities: getEntities,
     pollUpdates: pollUpdates,
+    requestFile: requestFile,
     edit: edit,
     add: add
 }
