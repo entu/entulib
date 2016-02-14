@@ -300,7 +300,7 @@ function pollUpdates(entuOptions) {
     })
 }
 
-function requestFile(fileUrl, entuOptions) {
+function createReadStream(fileUrl, entuOptions) {
     var headers = {}
     var qs = {}
     if (entuOptions.authId && entuOptions.authToken) {
@@ -322,7 +322,7 @@ module.exports = {
     getChilds: getChilds,
     getEntities: getEntities,
     pollUpdates: pollUpdates,
-    requestFile: requestFile,
+    createReadStream: createReadStream,
     edit: edit,
     add: add
 }
