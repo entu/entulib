@@ -3,10 +3,7 @@ var async     = require('async')
 var op        = require('object-path')
 var md        = require('marked')
 var crypto    = require('crypto')
-var Promise   = require('promise')
-// var Promise  = require('promise/lib/rejection-tracking').enable( {allRejections: true} )
-
-// Object.keys(entuOptions) = [ entuUrl, user, key, authId, authToken ]
+var RSVP      = require('rsvp')
 
 function signData(data, entuOptions) {
     data = data || {}
@@ -34,7 +31,7 @@ function signData(data, entuOptions) {
 
 //Get entity from Entu
 function getEntity(id, entuOptions) {
-    return new Promise(function (fulfill, reject) {
+    return new RSVP.Promise(function (fulfill, reject) {
         var headers = {}
         var qs = {}
         if (entuOptions.authId && entuOptions.authToken) {
@@ -114,7 +111,7 @@ function getEntity(id, entuOptions) {
 
 //Get entities by definition
 function getEntities(definition, limit, page, entuOptions) {
-    return new Promise(function (fulfill, reject) {
+    return new RSVP.Promise(function (fulfill, reject) {
         if (!definition) { return reject(new Error('Missing "definition"')) }
 
         var qs = {definition: definition}
@@ -149,7 +146,7 @@ function getEntities(definition, limit, page, entuOptions) {
 
 //Get childs by parent entity id and optionally by definition
 function getChilds(parentEid, definition, entuOptions) {
-    return new Promise(function (fulfill, reject) {
+    return new RSVP.Promise(function (fulfill, reject) {
         if (!parentEid) { return reject(new Error('Missing "parentEid"')) }
         var qs = {}
         if (definition) { qs = {definition: definition} }
@@ -219,7 +216,7 @@ function edit(params, entuOptions) {
         headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
     }
     var qb = signData(body, entuOptions)
-    return new Promise(function (fulfill, reject) {
+    return new RSVP.Promise(function (fulfill, reject) {
         request.put(
             { url: entuOptions.entuUrl + '/api2/entity-' + params.entity_id, headers: headers, body: qb, strictSSL: true, json: true, timeout: 60000 },
             function(error, response, body) {
@@ -256,7 +253,7 @@ function add(parentEid, definition, properties, entuOptions) {
         strictSSL: true,
         json: true
     }
-    return new Promise(function (fulfill, reject) {
+    return new RSVP.Promise(function (fulfill, reject) {
         request.post(options, function(error, response, body) {
             if (error) { return reject(error) }
             if (response.statusCode !== 201 || !body.result) { return reject(new Error(op.get(body, 'error', body))) }
@@ -292,7 +289,7 @@ function pollUpdates(entuOptions) {
         strictSSL: true,
         json: true
     }
-    return new Promise(function (fulfill, reject) {
+    return new RSVP.Promise(function (fulfill, reject) {
         request.get(options, function(error, response, body) {
             if (error) {
                 return reject(error)
