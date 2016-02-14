@@ -1,6 +1,7 @@
 var request   = require('request')
 var async     = require('async')
 var op        = require('object-path')
+var fs        = require('fs')
 var md        = require('marked')
 var crypto    = require('crypto')
 var RSVP      = require('rsvp')
@@ -316,6 +317,68 @@ function createReadStream(fileUrl, entuOptions) {
     return request.get(options)
 }
 
+// property_definition in form of entity_keyname + "-" + property_keyname
+// as for entity with definition "person" and property with definition "photo"
+// property_definition = "person-photo"
+function uploadFile(fileOptions, entuOptions) {
+    // console.log(entuOptions)
+    var headers = {}
+    var qs = {
+        'entity'   : fileOptions.entityId,
+        'property' : fileOptions.property,
+        'filename' : fileOptions.filename,
+        'filetype' : fileOptions.filetype,
+        'filesize' : fileOptions.filesize
+    }
+    console.log('qs.1', qs)
+    if (entuOptions.authId && entuOptions.authToken) {
+        headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
+    } else {
+        qs = signData(qs, entuOptions)
+    }
+
+    console.log('qs.2', qs)
+
+    var options = {
+        url: entuOptions.entuUrl + '/api2/file/s3',
+        headers: headers,
+        qs: qs,
+        strictSSL: true,
+        json: true
+    }
+    return new RSVP.Promise(function (fulfill, reject) {
+        request.post(options, function(error, response, body) {
+            if (error) {
+                console.log('addFileCB: Can\'t reach Entu')
+                reject(error)
+            }
+
+            console.log('\n======')
+            console.log(JSON.stringify(body.result.s3, null, 4))
+            console.log('\n======')
+            console.log(JSON.stringify(response.body.result.s3, null, 4))
+
+            if (response.statusCode !== 200 || !body.result) { return reject(new Error(op.get(body, ['error'], body))) }
+
+            try {
+                var formData = body.result.s3.data
+            } catch (err) {
+                console.log('EntuLib err: ', err)
+                console.log(body.result.s3)
+                return reject(new Error({fileOptions: fileOptions, qs: qs, err: err}))
+            }
+            formData['file'] = fs.createReadStream(fileOptions.filepath)
+
+            request.post({url: body.result.s3.url, formData: formData}, function optionalCallback(err, httpResponse) {
+                if (err) {
+                    return reject(new Error({fileOptions: fileOptions, qs: qs, err: err}))
+                }
+                fulfill({ 'updates': op.get(body, 'result', []), 'count': op.get(body, 'count', 0) })
+            })
+        })
+    })
+}
+
 
 module.exports = {
     getEntity: getEntity,
@@ -323,6 +386,7 @@ module.exports = {
     getEntities: getEntities,
     pollUpdates: pollUpdates,
     createReadStream: createReadStream,
+    uploadFile: uploadFile,
     edit: edit,
     add: add
 }
