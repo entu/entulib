@@ -330,14 +330,11 @@ function uploadFile(fileOptions, entuOptions) {
         'filetype' : fileOptions.filetype,
         'filesize' : fileOptions.filesize
     }
-    console.log('qs.1', qs)
     if (entuOptions.authId && entuOptions.authToken) {
         headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
     } else {
         qs = signData(qs, entuOptions)
     }
-
-    console.log('qs.2', qs)
 
     var options = {
         url: entuOptions.entuUrl + '/api2/file/s3',
@@ -352,11 +349,6 @@ function uploadFile(fileOptions, entuOptions) {
                 console.log('addFileCB: Can\'t reach Entu')
                 reject(error)
             }
-
-            console.log('\n======')
-            console.log(JSON.stringify(body.result.s3, null, 4))
-            console.log('\n======')
-            console.log(JSON.stringify(response.body.result.s3, null, 4))
 
             if (response.statusCode !== 200 || !body.result) { return reject(new Error(op.get(body, ['error'], body))) }
 
