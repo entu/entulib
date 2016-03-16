@@ -126,7 +126,7 @@ function getEntities(definition, limit, page, entuOptions) {
     if (!definition) {
         return new RSVP.Promise(function (fulfill, reject) {
             return reject(new Error('Missing "definition"'))
-        }
+        })
     }
     var qs = {definition: definition}
     var headers = {}
@@ -173,7 +173,7 @@ function getChilds(parentEid, definition, entuOptions) {
     if (!parentEid) {
         return new RSVP.Promise(function (fulfill, reject) {
             return reject(new Error('Missing "parentEid"'))
-        }
+        })
     }
     var qs = {}
     if (definition) { qs = {definition: definition} }
