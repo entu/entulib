@@ -303,6 +303,33 @@ function pollUpdates(entuOptions) {
     })
 }
 
+function pollParents(id, entuOptions) {
+    var qs = {}
+    var headers = {}
+    if (entuOptions.authId && entuOptions.authToken) {
+        headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
+    } else {
+        qs = signData(qs, entuOptions)
+    }
+
+    var requestUrl = entuOptions.entuUrl + ENTU_API + '/entity-' + id + '/parents'
+    // debug('Checking for parents of ' + id + ' from ' + requestUrl)
+    var options = {
+        url: requestUrl,
+        headers: headers,
+        qs: qs,
+        strictSSL: true,
+        json: true
+    }
+    return new Promise(function (fulfill, reject) {
+        request.get(options, function(error, response, body) {
+            if (error) { return reject(error) }
+            if (response.statusCode !== 200 || !body.result) { return reject(new Error(op.get(body, 'error', body))) }
+            fulfill(op.get(body, 'result', []))
+        })
+    })
+}
+
 function createReadStream(fileUrl, entuOptions) {
     var headers = {}
     var qs = {}
@@ -379,6 +406,7 @@ module.exports = {
     getChilds: getChilds,
     getEntities: getEntities,
     pollUpdates: pollUpdates,
+    pollParents: pollParents,
     createReadStream: createReadStream,
     uploadFile: uploadFile,
     edit: edit,
