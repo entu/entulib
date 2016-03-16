@@ -1,5 +1,6 @@
 entulib
 =======
+[![npm version](https://badge.fury.io/js/entulib.svg)](https://badge.fury.io/js/entulib)
 [![DOI](https://zenodo.org/badge/6763/mitselek/entulib.png)](http://dx.doi.org/10.5281/zenodo.12356)
 [![Dependency Status](https://david-dm.org/mitselek/entulib.svg)](https://david-dm.org/mitselek/entulib)
 
