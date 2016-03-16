@@ -1,6 +1,7 @@
 entulib
 =======
 [![DOI](https://zenodo.org/badge/6763/mitselek/entulib.png)](http://dx.doi.org/10.5281/zenodo.12356)
+[![Dependency Status](https://david-dm.org/mitselek/entulib.svg)](https://david-dm.org/mitselek/entulib)
 
 
 Library for authenticated access to Entu database API.
@@ -36,3 +37,14 @@ All methods return a promise
 - edit(params, entuOptions)
 - add(parentEid, definition, properties, entuOptions)
 - pollUpdates(entuOptions)
+
+
+#### EntuOptions
+
+```
+entuOptions = {
+  entuUrl: entuUrl,
+  user: user,
+  key: key
+}
+```
