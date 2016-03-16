@@ -31,6 +31,7 @@ Authentication of application is done with
 then `var entu = require('entulib')`
 
 
+
 #### Methods to please your application
 All methods return a promise
 - getEntity(id, entuOptions)
@@ -39,6 +40,7 @@ All methods return a promise
 - edit(params, entuOptions)
 - add(parentEid, definition, properties, entuOptions)
 - pollUpdates(entuOptions)
+- pollParents(id, entuOptions)
 
 
 #### EntuOptions
