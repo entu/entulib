@@ -26,8 +26,8 @@ Authentication of application is done with
 
 
 #### Usage
-Add "entulib": "mitselek/entulib" to dependencies, then  
-var entu = require('entulib')
+`$ npm install entulib --save`,  
+then `var entu = require('entulib')`
 
 
 #### Methods to please your application
