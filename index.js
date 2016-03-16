@@ -34,22 +34,31 @@ function signData(data, entuOptions) {
 
 //Get entity from Entu
 function getEntity(id, entuOptions) {
-    return new RSVP.Promise(function (fulfill, reject) {
-        var headers = {}
-        var qs = {}
-        if (entuOptions.authId && entuOptions.authToken) {
-            headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
-        } else {
-            qs = signData(null, entuOptions)
-        }
+    var headers = {}
+    var qs = {}
+    if (entuOptions.authId && entuOptions.authToken) {
+        headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
+    } else {
+        qs = signData(null, entuOptions)
+    }
 
-        var apiUrl = entuOptions.entuUrl + ENTU_API + '/entity-' + id
-        request.get({url: apiUrl, headers: headers, qs: qs, strictSSL: true, json: true}, function(err, response, body) {
+    var options = {
+        url: entuOptions.entuUrl + ENTU_API + '/entity-' + id,
+        headers: headers,
+        qs: qs,
+        strictSSL: true,
+        json: true
+    }
+    return new RSVP.Promise(function (fulfill, reject) {
+        request.get(options, function(err, response, body) {
             if (err) {
                 return reject(err)
             }
             if (response.statusCode !== 200) {
-                return reject({error: op.get(body, 'error', body), eID: id, status: response.statusCode})
+                return reject({
+                    error: op.get(body, 'error', body), eID: id, status: response.statusCode,
+                    options: options
+                })
             }
             if (!body.result) {
                 return reject(op.get(body, 'error', body))
@@ -114,22 +123,34 @@ function getEntity(id, entuOptions) {
 
 //Get entities by definition
 function getEntities(definition, limit, page, entuOptions) {
-    return new RSVP.Promise(function (fulfill, reject) {
-        if (!definition) { return reject(new Error('Missing "definition"')) }
-
-        var qs = {definition: definition}
-        var headers = {}
-        if (limit) { qs.limit = limit }
-        if (page) { qs.page = page }
-        if (entuOptions.authId && entuOptions.authToken) {
-            headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
-        } else {
-            qs = signData(qs, entuOptions)
+    if (!definition) {
+        return new RSVP.Promise(function (fulfill, reject) {
+            return reject(new Error('Missing "definition"'))
         }
+    }
+    var qs = {definition: definition}
+    var headers = {}
+    if (limit) { qs.limit = limit }
+    if (page) { qs.page = page }
+    if (entuOptions.authId && entuOptions.authToken) {
+        headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
+    } else {
+        qs = signData(qs, entuOptions)
+    }
+    var options = {
+        url: entuOptions.entuUrl + ENTU_API + '/entity',
+        headers: headers,
+        qs: qs,
+        strictSSL: true,
+        json: true
+    }
 
-        request.get({url: entuOptions.entuUrl + ENTU_API + '/entity', headers: headers, qs: qs, strictSSL: true, json: true}, function(error, response, body) {
+    return new RSVP.Promise(function (fulfill, reject) {
+        request.get(options, function(error, response, body) {
             if (error) { return reject(error) }
-            if (response.statusCode !== 200 || !body.result) { return reject(new Error(op.get(body, 'error', body))) }
+            if (response.statusCode !== 200 || !body.result) {
+                return reject(new Error(op.get(body, 'error', body)))
+            }
 
             var entities = []
             async.eachSeries(op.get(body, 'result', []), function(e, callback) {
@@ -149,24 +170,29 @@ function getEntities(definition, limit, page, entuOptions) {
 
 //Get childs by parent entity id and optionally by definition
 function getChilds(parentEid, definition, entuOptions) {
+    if (!parentEid) {
+        return new RSVP.Promise(function (fulfill, reject) {
+            return reject(new Error('Missing "parentEid"'))
+        }
+    }
+    var qs = {}
+    if (definition) { qs = {definition: definition} }
+    var headers = {}
+    if (entuOptions.authId && entuOptions.authToken) {
+        headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
+    } else {
+        qs = signData(qs, entuOptions)
+    }
+    var url = '/entity-' + parentEid + '/childs'
+    var options = {
+        url: entuOptions.entuUrl + ENTU_API + url,
+        headers: headers,
+        qs: qs,
+        strictSSL: true,
+        json: true
+    }
+
     return new RSVP.Promise(function (fulfill, reject) {
-        if (!parentEid) { return reject(new Error('Missing "parentEid"')) }
-        var qs = {}
-        if (definition) { qs = {definition: definition} }
-        var headers = {}
-        if (entuOptions.authId && entuOptions.authToken) {
-            headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
-        } else {
-            qs = signData(qs, entuOptions)
-        }
-        var url = '/entity-' + parentEid + '/childs'
-        var options = {
-            url: entuOptions.entuUrl + ENTU_API + url,
-            headers: headers,
-            qs: qs,
-            strictSSL: true,
-            json: true
-        }
         request.get(options, function(error, response, body) {
             if (error) { return reject(error) }
             if (response.statusCode !== 200 || !body.result) { return reject(new Error(op.get(body, 'error', body))) }
