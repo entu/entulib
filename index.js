@@ -37,7 +37,7 @@ function getEntity(id, entuOptions) {
     var headers = {}
     var qs = {}
     if (entuOptions.authId && entuOptions.authToken) {
-        headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
+        headers = { 'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken }
     } else {
         qs = signData(null, entuOptions)
     }
@@ -128,12 +128,12 @@ function getEntities(definition, limit, page, entuOptions) {
             return reject(new Error('Missing "definition"'))
         })
     }
-    var qs = {definition: definition}
+    var qs = { definition: definition }
     var headers = {}
     if (limit) { qs.limit = limit }
     if (page) { qs.page = page }
     if (entuOptions.authId && entuOptions.authToken) {
-        headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
+        headers = { 'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken }
     } else {
         qs = signData(qs, entuOptions)
     }
@@ -176,10 +176,10 @@ function getChilds(parentEid, definition, entuOptions) {
         })
     }
     var qs = {}
-    if (definition) { qs = {definition: definition} }
+    if (definition) { qs = { definition: definition } }
     var headers = {}
     if (entuOptions.authId && entuOptions.authToken) {
-        headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
+        headers = { 'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken }
     } else {
         qs = signData(qs, entuOptions)
     }
@@ -242,7 +242,7 @@ function edit(params, entuOptions) {
     body[property] = op.get(params, 'new_value', '')
     var headers = {}
     if (entuOptions.authId && entuOptions.authToken) {
-        headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
+        headers = { 'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken }
     }
     var qb = signData(body, entuOptions)
     return new RSVP.Promise(function (fulfill, reject) {
@@ -270,7 +270,7 @@ function add(parentEid, definition, properties, entuOptions) {
     var headers = {}
     var qb = data
     if (entuOptions.authId && entuOptions.authToken) {
-        headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
+        headers = { 'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken }
     } else {
         qb = signData(data, entuOptions)
     }
@@ -306,7 +306,7 @@ function pollUpdates(entuOptions) {
 
     var headers = {}
     if (entuOptions.authId && entuOptions.authToken) {
-        headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
+        headers = { 'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken }
     } else {
         qs = signData(qs, entuOptions)
     }
@@ -333,7 +333,7 @@ function pollParents(id, entuOptions) {
     var qs = {}
     var headers = {}
     if (entuOptions.authId && entuOptions.authToken) {
-        headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
+        headers = { 'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken }
     } else {
         qs = signData(qs, entuOptions)
     }
@@ -360,7 +360,7 @@ function createReadStream(fileUrl, entuOptions) {
     var headers = {}
     var qs = {}
     if (entuOptions.authId && entuOptions.authToken) {
-        headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
+        headers = { 'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken }
     } else {
         qs = signData(null, entuOptions)
     }
@@ -386,7 +386,7 @@ function uploadFile(fileOptions, entuOptions) {
         'filesize' : fileOptions.filesize
     }
     if (entuOptions.authId && entuOptions.authToken) {
-        headers = {'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken}
+        headers = { 'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken }
     } else {
         qs = signData(qs, entuOptions)
     }
