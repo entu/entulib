@@ -221,7 +221,62 @@ function getChilds(parentEid, definition, entuOptions) {
             )
         })
     })
+}
 
+
+//Get referrals by entity id and optionally by definition
+function getReferrals(targetEid, definition, entuOptions) {
+    if (!targetEid) {
+        return new RSVP.Promise(function (fulfill, reject) {
+            return reject(new Error('Missing "targetEid"'))
+        })
+    }
+    var qs = {}
+    if (definition) { qs = { definition: definition } }
+    var headers = {}
+    if (entuOptions.authId && entuOptions.authToken) {
+        headers = { 'X-Auth-UserId': entuOptions.authId, 'X-Auth-Token': entuOptions.authToken }
+    } else {
+        qs = signData(qs, entuOptions)
+    }
+    var url = '/entity-' + targetEid + '/referrals'
+    var options = {
+        url: entuOptions.entuUrl + ENTU_API + url,
+        headers: headers,
+        qs: qs,
+        strictSSL: true,
+        json: true
+    }
+
+    return new RSVP.Promise(function (fulfill, reject) {
+        request.get(options, function(error, response, body) {
+            if (error) { return reject(error) }
+            if (response.statusCode !== 200 || !body.result) { return reject(new Error(op.get(body, 'error', body))) }
+            var definitions = Object.keys(body.result)
+            var childs = []
+            async.eachSeries(
+                definitions,
+                function doLoop(definition, doLoopCB) {
+                    var loop = ['result', definition, 'entities']
+                    async.each(op.get(body, loop, []), function(e, eachCB) {
+                        getEntity(e.id, entuOptions)
+                        .then(function(childE) {
+                            childE.set('_display', {name: e.name, info: e.info})
+                            childs.push(childE)
+                            eachCB()
+                        })
+                    }, function gotByDef(error) {
+                        if (error) { return doLoopCB(error) }
+                        doLoopCB(null)
+                    })
+                },
+                function endLoop(error) {
+                    if (error) { return reject(error) }
+                    fulfill(childs)
+                }
+            )
+        })
+    })
 }
 
 
@@ -430,6 +485,7 @@ function uploadFile(fileOptions, entuOptions) {
 module.exports = {
     getEntity: getEntity,
     getChilds: getChilds,
+    getReferrals: getReferrals,
     getEntities: getEntities,
     pollUpdates: pollUpdates,
     pollParents: pollParents,
