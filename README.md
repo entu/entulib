@@ -37,6 +37,7 @@ All methods return a promise
 - getEntity(id, entuOptions)
 - getEntities(definition, limit, page, entuOptions)
 - getChilds(parentEid, definition, entuOptions)
+- getRelationships(parentEid, definition, entuOptions)
 - edit(params, entuOptions)
 - add(parentEid, definition, properties, entuOptions)
 - pollUpdates(entuOptions)
