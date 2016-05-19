@@ -13,6 +13,7 @@ Library for authenticated access to Entu database API.
 | Get Entity | Fetch Entity by ID | GET |
 | Find Entity | Description | GET |
 | Get Childs | Description | GET |
+| Get Relationships | Description | GET |
 | Edit Entity | Description | PUT |
 | Add Entity | Description | POST |
 | Poll | Description | GET |
