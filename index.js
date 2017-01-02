@@ -67,56 +67,7 @@ function getEntity (id, entuOptions) {
       if (body.error) {
         return reject(op.get(body, 'error', body))
       }
-      var properties = op.get(body, 'result.properties', {})
-      var entity = {
-        id: op.get(body, 'result.id', null),
-        displayname: op.get(body, 'result.displayname', null),
-        displayinfo: op.get(body, 'result.displayinfo', null),
-        definition: op.get(body, 'result.definition.keyname', null),
-        picture: entuOptions.entuUrl + ENTU_API + '/entity-' + op.get(body, 'result.id', null) + '/picture',
-        right: op.get(body, 'result.right', null),
-        properties: {}
-      }
-      for (var p in properties) {
-        if (op.has(properties, [p, 'values'])) {
-          for (var v in op.get(properties, [p, 'values'])) {
-            if (op.get(properties, [p, 'datatype']) === 'file') {
-              op.push(entity, ['properties', p], {
-                id: op.get(properties, [p, 'values', v, 'id']),
-                created: op.get(properties, [p, 'values', v, 'created']),
-                'created_by': op.get(properties, [p, 'values', v, 'created_by']),
-                value: op.get(properties, [p, 'values', v, 'value']),
-                file: entuOptions.entuUrl + ENTU_API + '/file-' + op.get(properties, [p, 'values', v, 'db_value'])
-              })
-            } else if (op.get(properties, [p, 'datatype']) === 'text') {
-              op.push(entity, ['properties', p], {
-                id: op.get(properties, [p, 'values', v, 'id']),
-                created: op.get(properties, [p, 'values', v, 'created']),
-                'created_by': op.get(properties, [p, 'values', v, 'created_by']),
-                value: op.get(properties, [p, 'values', v, 'value']),
-                md: md(op.get(properties, [p, 'values', v, 'db_value']))
-              })
-            } else if (op.get(properties, [p, 'datatype']) === 'reference') {
-              op.push(entity, ['properties', p], {
-                id: op.get(properties, [p, 'values', v, 'id']),
-                created: op.get(properties, [p, 'values', v, 'created']),
-                'created_by': op.get(properties, [p, 'values', v, 'created_by']),
-                value: op.get(properties, [p, 'values', v, 'value']),
-                reference: op.get(properties, [p, 'values', v, 'db_value'])
-              })
-            } else {
-              op.push(entity, ['properties', p], {
-                id: op.get(properties, [p, 'values', v, 'id']),
-                created: op.get(properties, [p, 'values', v, 'created']),
-                'created_by': op.get(properties, [p, 'values', v, 'created_by']),
-                value: op.get(properties, [p, 'values', v, 'value'])
-              })
-            }
-          }
-        // if (op.get(properties, [p, 'multiplicity']) === 1) { op.set(entity, ['properties', p], op.get(entity, ['properties', p, 0])) }
-        }
-      }
-      fulfill(op(entity))
+      fulfill(op(body.result))
     })
   })
 }
@@ -215,7 +166,7 @@ function getChilds (parentEid, definition, entuOptions) {
         },
         function endLoop (error) {
           if (error) { return reject(error) }
-          fulfill(childs)
+          fulfill({ entities: childs, count: childs.length })
         }
       )
     })
