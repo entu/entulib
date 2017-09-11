@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "entulib",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "license": "MIT",
   "description": "Javascript library to access Entu database",
   "homepage": "https://github.com/entu/entulib",
@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "async": "1.5.2",
-    "bluebird": "^3.4.6",
+    "bluebird": "^3.5.0",
     "marked": "^0.3.6",
     "object-path": "0.9.2",
     "request": "2.72.0"
