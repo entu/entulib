@@ -4,15 +4,15 @@
   "version": "2.0.1",
   "license": "MIT",
   "description": "Javascript library to access Entu database",
-  "homepage": "https://github.com/mitselek/entulib",
+  "homepage": "https://github.com/entu/entulib",
   "author": "Mihkel Putrinš <mihkel@entu.ee>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mitselek/entulib"
+    "url": "https://github.com/entu/entulib"
   },
   "bugs": {
     "email": "mihkel@entu.ee",
-    "url": "https://github.com/mitselek/entulib/issues"
+    "url": "https://github.com/entu/entulib/issues"
   },
   "engines": {
     "node": "4.x"
