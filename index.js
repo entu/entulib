@@ -134,6 +134,7 @@ function getChilds (parentEid, definition, entuOptions) {
     qs = signData(qs, entuOptions)
   }
   var url = '/entity-' + parentEid + '/childs'
+  if (definition) { url = url + '?definition=' + definition }
   var options = {
     url: entuOptions.entuUrl + ENTU_API + url,
     headers: headers,
@@ -152,12 +153,14 @@ function getChilds (parentEid, definition, entuOptions) {
         definitions,
         function doLoop (definition, doLoopCB) {
           var loop = ['result', definition, 'entities']
-          async.each(op.get(body, loop, []), function (e, eachCB) {
+          async.eachLimit(op.get(body, loop, []), 1, function (e, eachCB) {
             getEntity(e.id, entuOptions)
               .then(function (childE) {
                 childE.set('_display', {name: e.name, info: e.info})
                 childs.push(childE)
-                eachCB()
+                setTimeout(function () {
+                  eachCB()
+                }, 500)
               })
           }, function gotByDef (error) {
             if (error) { return doLoopCB(error) }
