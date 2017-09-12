@@ -67,7 +67,56 @@ function getEntity (id, entuOptions) {
       if (body.error) {
         return reject(op.get(body, 'error', body))
       }
-      fulfill(op(body.result))
+      var properties = op.get(body, 'result.properties', {})
+      var entity = {
+        id: op.get(body, 'result.id', null),
+        displayname: op.get(body, 'result.displayname', null),
+        displayinfo: op.get(body, 'result.displayinfo', null),
+        definition: op.get(body, 'result.definition.keyname', null),
+        picture: entuOptions.entuUrl + ENTU_API + '/entity-' + op.get(body, 'result.id', null) + '/picture',
+        right: op.get(body, 'result.right', null),
+        properties: {}
+      }
+      for (var p in properties) {
+        if (op.has(properties, [p, 'values'])) {
+          for (var v in op.get(properties, [p, 'values'])) {
+            if (op.get(properties, [p, 'datatype']) === 'file') {
+              op.push(entity, ['properties', p], {
+                id: op.get(properties, [p, 'values', v, 'id']),
+                created: op.get(properties, [p, 'values', v, 'created']),
+                'created_by': op.get(properties, [p, 'values', v, 'created_by']),
+                value: op.get(properties, [p, 'values', v, 'value']),
+                file: entuOptions.entuUrl + ENTU_API + '/file-' + op.get(properties, [p, 'values', v, 'db_value'])
+              })
+            } else if (op.get(properties, [p, 'datatype']) === 'text') {
+              op.push(entity, ['properties', p], {
+                id: op.get(properties, [p, 'values', v, 'id']),
+                created: op.get(properties, [p, 'values', v, 'created']),
+                'created_by': op.get(properties, [p, 'values', v, 'created_by']),
+                value: op.get(properties, [p, 'values', v, 'value']),
+                md: md(op.get(properties, [p, 'values', v, 'db_value']))
+              })
+            } else if (op.get(properties, [p, 'datatype']) === 'reference') {
+              op.push(entity, ['properties', p], {
+                id: op.get(properties, [p, 'values', v, 'id']),
+                created: op.get(properties, [p, 'values', v, 'created']),
+                'created_by': op.get(properties, [p, 'values', v, 'created_by']),
+                value: op.get(properties, [p, 'values', v, 'value']),
+                reference: op.get(properties, [p, 'values', v, 'db_value'])
+              })
+            } else {
+              op.push(entity, ['properties', p], {
+                id: op.get(properties, [p, 'values', v, 'id']),
+                created: op.get(properties, [p, 'values', v, 'created']),
+                'created_by': op.get(properties, [p, 'values', v, 'created_by']),
+                value: op.get(properties, [p, 'values', v, 'value'])
+              })
+            }
+          }
+        // if (op.get(properties, [p, 'multiplicity']) === 1) { op.set(entity, ['properties', p], op.get(entity, ['properties', p, 0])) }
+        }
+      }
+      fulfill(op(entity))
     })
   })
 }
@@ -105,11 +154,15 @@ function getEntities (definition, limit, page, entuOptions) {
 
       var entities = []
       async.eachSeries(op.get(body, 'result', []), function (e, callback) {
-        getEntity(e.id, entuOptions)
-          .then(function (opEntity) {
-            entities.push(opEntity)
-            callback()
-          })
+        console.log('bydef in one')
+        setTimeout(function () {
+          console.log('one more ' + definition)
+          getEntity(e.id, entuOptions)
+            .then(function (opEntity) {
+              entities.push(opEntity)
+              callback()
+            })
+          }, 1000)
       }, function (error) {
         if (error) { return reject(error) }
         fulfill({ entities: entities, total: body.count, count: entities.length, page: page })
@@ -134,7 +187,6 @@ function getChilds (parentEid, definition, entuOptions) {
     qs = signData(qs, entuOptions)
   }
   var url = '/entity-' + parentEid + '/childs'
-  if (definition) { url = url + '?definition=' + definition }
   var options = {
     url: entuOptions.entuUrl + ENTU_API + url,
     headers: headers,
@@ -153,14 +205,16 @@ function getChilds (parentEid, definition, entuOptions) {
         definitions,
         function doLoop (definition, doLoopCB) {
           var loop = ['result', definition, 'entities']
-          async.eachLimit(op.get(body, loop, []), 1, function (e, eachCB) {
+          async.eachSeries(op.get(body, loop, []), function (e, eachCB) {
             getEntity(e.id, entuOptions)
               .then(function (childE) {
                 childE.set('_display', {name: e.name, info: e.info})
                 childs.push(childE)
+                console.log('child in one')
                 setTimeout(function () {
+                  console.log('one child')
                   eachCB()
-                }, 500)
+                }, 1000)
               })
           }, function gotByDef (error) {
             if (error) { return doLoopCB(error) }
@@ -169,7 +223,7 @@ function getChilds (parentEid, definition, entuOptions) {
         },
         function endLoop (error) {
           if (error) { return reject(error) }
-          fulfill({ entities: childs, count: childs.length })
+          fulfill(childs)
         }
       )
     })
