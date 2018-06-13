@@ -160,7 +160,7 @@ function getChilds (parentEid, definition, entuOptions) {
                 childs.push(childE)
                 setTimeout(function () {
                   eachCB()
-                }, 500)
+                }, 100)
               })
           }, function gotByDef (error) {
             if (error) { return doLoopCB(error) }
