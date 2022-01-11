@@ -1,15 +1,11 @@
 entulib
 =======
 [![npm version](https://badge.fury.io/js/entulib.svg)](https://badge.fury.io/js/entulib)
-[![Build Status](https://travis-ci.org/mitselek/entulib.svg?branch=master)](https://travis-ci.org/mitselek/entulib)
-[![Dependency Status](https://david-dm.org/mitselek/entulib.svg)](https://david-dm.org/mitselek/entulib)
-[![DOI](https://zenodo.org/badge/6763/mitselek/entulib.png)](http://dx.doi.org/10.5281/zenodo.12356)
-
 
 Library for authenticated access to Entu database API.
 
-| Service Request | Description | HTTP Method
-|:---- |:---- |:---- |:---:|:---:|
+| Service Request | Description | HTTP Method |
+|:---- |:---- |:---- |
 | Get Entity | Fetch Entity by ID | GET |
 | Find Entity | Description | GET |
 | Get Childs | Description | GET |
@@ -28,7 +24,7 @@ Authentication of application is done with
 
 
 #### Usage
-`$ npm install entulib --save`,  
+`$ npm install entulib --save`,
 then `var entu = require('entulib')`
 
 
