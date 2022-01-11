@@ -2,7 +2,6 @@ var request = require('request')
 var async = require('async')
 var op = require('object-path')
 var fs = require('fs')
-var md = require('marked')
 var crypto = require('crypto')
 var Promise = require('bluebird')
 
